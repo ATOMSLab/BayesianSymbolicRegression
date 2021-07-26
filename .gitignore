@@ -3,3 +3,6 @@
 /NotGit_Testing_materials
 /NotGit_VisualizingData
 *.code-workspace
+/__pycache__
+/.ipynb_checkpoints
+*.jpeg

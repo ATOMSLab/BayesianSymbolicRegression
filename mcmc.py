@@ -261,14 +261,15 @@ class Tree():
                         str(self), '(using full form!)', file=sys.stderr)
                 can = str(self)
             return can.replace(' ', '')
-
+        ################# Modification ###############################
         else:
             try:
                 ex = sympify(str(self))
                 atomd = dict([(a.name, a) for a in ex.atoms() if a.is_Symbol])
                 variables = [atomd[v] for v in self.variables if v in list(atomd.keys())]
                 parameters = [atomd[p] for p in self.parameters if p in list(atomd.keys())]
-                cansp = simplify_expr(ex, variables, parameters)
+                cansp = simplify_expr(ex, variables, parameters) # simplify the expression
+                # Rearrange the term 
                 can = str(cansp)
                 ps = list([str(s) for s in cansp.free_symbols])
                 positions = []
