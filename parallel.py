@@ -11,12 +11,8 @@ class Parallel():
     # -------------------------------------------------------------------------
     def __init__(self, Ts, ops=OPS, variables=['x'], parameters=['a'],
                  max_size=50,
-<<<<<<< HEAD
                  prior_par={}, x=None, y=None,
                  from_string=None ):
-=======
-                 prior_par={}, x=None, y=None):
->>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
         # All trees are initialized to the same tree but with different BT
         Ts.sort()
         self.Ts = [str(T) for T in Ts]
@@ -25,10 +21,7 @@ class Parallel():
                                  parameters=deepcopy(parameters),
                                  prior_par=deepcopy(prior_par), x=x, y=y,
                                  max_size=max_size,
-<<<<<<< HEAD
                                  from_string=from_string, # modification
-=======
->>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
                                  BT=1)}
         self.t1 = self.trees['1']
         for BT in [T for T in self.Ts if T != 1]:

@@ -60,7 +60,6 @@ if __name__ == '__main__':
     # expr = (((a2 + a0) + p) / (((a3 / (p / a3)) + (p / a2)) + a1))
     # expr = ((a0 + p) / (((a3 / (p / a3)) + (p / a2)) + a1))
     print(expr)
-    # print(expr.is_polynomial())
     atomd = dict([(a.name, a) for a in expr.atoms() if a.is_Symbol])
     v_name = ['p']
     p_name = ['a0', 'a1', 'a2', 'a3']
