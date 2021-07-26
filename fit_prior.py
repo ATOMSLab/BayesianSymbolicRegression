@@ -112,11 +112,7 @@ def read_prior_par(inFileName):
     with open(inFileName) as inf:
         lines = inf.readlines()
     ppar = dict(list(zip(lines[0].strip().split()[1:],
-<<<<<<< HEAD
                          [float(x) for x in lines[-1].strip().split()[1:]])))
-=======
-                    [float(x) for x in lines[-1].strip().split()[1:]])))
->>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
     return ppar
 
 # -----------------------------------------------------------------------------

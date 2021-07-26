@@ -4,21 +4,73 @@ import numpy as np
 import scipy
 import pandas as pd
 import matplotlib.pyplot as plt
+<<<<<<< HEAD
+from copy import copy
+=======
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
 from copy import deepcopy
 from sympy import *
 from random import seed, random, choice
 from itertools import product, permutations
 from scipy.optimize import curve_fit
+<<<<<<< HEAD
+# from scipy.misc import comb
+
+from sym_thermo_constraint import sym_thermo_constraint
+from simplify_expr import simplify_expr
+
+run_thermo_constraint = True
+change_complexity = True
+run_new_canonical = True
+axiom1_weight, axiom2_weight = 20., 10.
+complexity_factor = 2.
+
+# import multiprocessing
+# from multiprocessing import Pool
+# import time
+
+# import warnings
+# warnings.filterwarnings('error')
+# seed(1111)
+=======
 #from scipy.misc import comb
 
 #import warnings
 #warnings.filterwarnings('error')
 
 #seed(1111)
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
 
 # -----------------------------------------------------------------------------
 # The accepted operations (key: operation; value: #offspring)
 # -----------------------------------------------------------------------------
+<<<<<<< HEAD
+# OPS = {
+#     'sin': 1,
+#     'cos': 1,
+#     'tan': 1,
+#     'exp': 1,
+#     'log': 1,
+#     'sinh' : 1,
+#     'cosh' : 1,
+#     'tanh' : 1,
+#     'pow2' : 1,
+#     'pow3' : 1,
+#     'abs'  : 1,
+#     'sqrt' : 1,
+#     'fac' : 1,
+#     '-' : 1,
+#     '+' : 2,
+#     '*' : 2,
+#     '/' : 2,
+#     '**' : 2,
+# }
+
+OPS = {
+    'pow2' : 1,
+    'pow3' : 1,
+    'sqrt' : 1,
+=======
 OPS = {
     'sin': 1,
     'cos': 1,
@@ -33,13 +85,18 @@ OPS = {
     'abs'  : 1,
     'sqrt' : 1,
     'fac' : 1,
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
     '-' : 1,
     '+' : 2,
     '*' : 2,
     '/' : 2,
+<<<<<<< HEAD
+}
+=======
     '**' : 2,
 }
 
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
 # -----------------------------------------------------------------------------
 # The Node class
 # -----------------------------------------------------------------------------
@@ -80,7 +137,10 @@ class Node():
                                   for o in self.offspring])
                     )
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
 # -----------------------------------------------------------------------------
 # The Tree class
 # -----------------------------------------------------------------------------
@@ -106,7 +166,11 @@ class Tree():
             self.root = Node(root_value,
                              offspring=[],
                              parent=None)
+<<<<<<< HEAD
+        # The possible operations
+=======
         # The poosible operations
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
         self.ops = ops
         # The possible orders of the operations, move types, and move
         # type probabilities
@@ -135,6 +199,15 @@ class Tree():
         # The parameters of the prior propability (default: 5 everywhere)
         if prior_par == {}:
             self.prior_par = dict([('Nopi_%s' % t, 10.) for t in self.ops])
+<<<<<<< HEAD
+
+            #-------- Modification ----------
+            if change_complexity:
+                self.prior_par = dict([('Nopi_%s' % t, complexity_factor) for t in self.ops])
+            #--------------------------------
+
+=======
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
         else:
             self.prior_par = prior_par
         # The datasets
@@ -165,15 +238,28 @@ class Tree():
             self.build_from_string(from_string)
         # For fast fitting, we save past successful fits to this formula
         self.fit_par = {}
+<<<<<<< HEAD
+        #------------------ Modification ---------------------------------
+        self.bool_thermo, self.axiom = [], ''
+        self.tree_error = []
+        #-----------------------------------------------------------------
+
+=======
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
         # Goodness of fit measures
         self.sse = self.get_sse()
         self.bic = self.get_bic()
         self.E, self.EB, self.EP = self.get_energy()
+<<<<<<< HEAD
+        # To control formula degeneracy (i.e. different trees that
+        # correspond to the same canonical formula), we store the
+=======
         # Clear cache if the expression was created from string
         if from_string != None:
             self.fit_par = {}
         # To control formula degeneracy (i.e. different trees that
         # correspond to the same cannoninal formula), we store the
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
         # representative tree for each canonical formula
         self.representative = {}
         self.representative[self.canonical()] = (
@@ -212,6 +298,53 @@ class Tree():
         """Return the canonical form of a tree.
 
         """
+<<<<<<< HEAD
+        if not run_new_canonical:
+            try:
+                cansp = sympify(str(self).replace(' ', ''))
+                can = str(cansp)
+                ps = list([str(s) for s in cansp.free_symbols])
+                positions = []
+                for p in ps:
+                    if p.startswith('_') and p.endswith('_'):
+                        positions.append((can.find(p), p))
+                positions.sort()
+                pcount = 1
+                for pos, p in positions:
+                    can = can.replace(p, 'c%d' % pcount)
+                    pcount += 1
+            except:
+                if verbose:
+                    print('WARNING: Could not get canonical form for', \
+                        str(self), '(using full form!)', file=sys.stderr)
+                can = str(self)
+            return can.replace(' ', '')
+
+        else:
+            try:
+                ex = sympify(str(self))
+                atomd = dict([(a.name, a) for a in ex.atoms() if a.is_Symbol])
+                variables = [atomd[v] for v in self.variables if v in list(atomd.keys())]
+                parameters = [atomd[p] for p in self.parameters if p in list(atomd.keys())]
+                cansp = simplify_expr(ex, variables, parameters)
+                can = str(cansp)
+                ps = list([str(s) for s in cansp.free_symbols])
+                positions = []
+                for p in ps:
+                    if p.startswith('_') and p.endswith('_'):
+                        positions.append((can.find(p), p))
+                positions.sort()
+                pcount = 1
+                for pos, p in positions:
+                    can = can.replace(p, 'c%d' % pcount)
+                    pcount += 1
+            except:
+                print('Didn\'t use Canonical form')
+                print(self)
+                can = str(self)
+            return str(can).replace(' ', '')
+
+=======
         try:
             cansp = sympify(str(self).replace(' ', ''))
             can = str(cansp)
@@ -232,6 +365,7 @@ class Tree():
             can = str(self)
         return can.replace(' ', '')
     
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
     # -------------------------------------------------------------------------
     def latex(self):
         return latex(sympify(self.canonical()))
@@ -326,7 +460,11 @@ class Tree():
         self.__grow_tree(self.root, tlist[0], tlist[1])
         self.get_sse(verbose=verbose)
         self.get_bic(verbose=verbose)
+<<<<<<< HEAD
+        self.fit_par = {}  # Forget all values fitted so far
+=======
         self.fit_par = {} # Forget all values fitted so far
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
         return
 
 
@@ -586,6 +724,10 @@ Node and new is a tuple [node_value, [list, of, offspring, values]]
         atomd = dict([(a.name, a) for a in ex.atoms() if a.is_Symbol])
         variables = [atomd[v] for v in self.variables if v in list(atomd.keys())]
         parameters = [atomd[p] for p in self.parameters if p in list(atomd.keys())]
+<<<<<<< HEAD
+
+=======
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
         try:
             flam = lambdify(
                 variables + parameters, ex, [
@@ -668,8 +810,15 @@ Node and new is a tuple [node_value, [list, of, offspring, values]]
             if reset:
                 self.bic = 0
             return 0
+<<<<<<< HEAD
+
         # Get the sum of squared errors (fitting, if required)
         sse = self.get_sse(fit=fit, verbose=verbose)
+
+=======
+        # Get the sum of squared errors (fitting, if required)
+        sse = self.get_sse(fit=fit, verbose=verbose)
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
         # Calculate the BIC
         parameters = set([p.value for p in self.ets[0]
                           if p.value in self.parameters])
@@ -692,8 +841,45 @@ Node and new is a tuple [node_value, [list, of, offspring, values]]
             EB = self.get_bic(reset=reset, verbose=verbose) / 2.
         else:
             EB = self.bic / 2.
+<<<<<<< HEAD
+
         # Contribution from the prior
         EP = 0.0
+
+        #--------- Modification ---------------------
+        if run_thermo_constraint:
+            # Convert the Tree into a SymPy expression
+            ex = sympify(str(self))
+            atomd = dict([(a.name, a) for a in ex.atoms() if a.is_Symbol])
+            variables = [atomd[v] for v in self.variables if v in list(atomd.keys())]
+            parameters = [atomd[p] for p in self.parameters if p in list(atomd.keys())]
+
+            # Checking with thermo constraint (only applicable for 1 variable)
+            if len(variables) == 1:
+                try:
+                    self.bool_thermo, self.axiom, tree_error = sym_thermo_constraint(ex, variables[0], parameters)
+                    if tree_error != '':
+                        self.tree_error.append(tree_error)
+                    if self.bool_thermo is False and self.axiom == 'Axiom 1':
+                        EP += axiom1_weight
+                    elif self.bool_thermo is False and self.axiom == 'Axiom 2':
+                        EP += axiom2_weight
+                    else:
+                        EP += 0
+
+                except:
+                    EP += 0
+            else:
+                self.bool_thermo = False
+                self.axiom = 'Axiom 1'
+                EP += axiom1_weight
+            # ----------------------------------------------------------
+
+
+=======
+        # Contribution from the prior
+        EP = 0.0
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
         for op, nop in list(self.nops.items()):
             try:
                 EP += self.prior_par['Nopi_%s' % op] * nop
@@ -703,6 +889,10 @@ Node and new is a tuple [node_value, [list, of, offspring, values]]
                 EP += self.prior_par['Nopi2_%s' % op] * nop**2
             except KeyError:
                 pass
+<<<<<<< HEAD
+
+=======
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
         # Reset the value, if necessary
         if reset:
             self.EB = EB
@@ -1073,12 +1263,39 @@ a tuple [node_value, [list, of, offspring, values]].
                 dEB, dEP, dE = np.inf, np.inf, np.inf
             return dE, dEB, dEP, par_valuesNew
 
+<<<<<<< HEAD
+
+=======
        
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
     # -------------------------------------------------------------------------
     def mcmc_step(self, verbose=False, p_rr=0.05, p_long=.45):
         """Make a single MCMC step.
 
         """
+<<<<<<< HEAD
+        ### Modification ###
+        if run_thermo_constraint:
+            if self.bool_thermo == []:
+                # Convert the Tree into a SymPy expression
+                ex = sympify(str(self))
+                atomd = dict([(a.name, a) for a in ex.atoms() if a.is_Symbol])
+                variables = [atomd[v] for v in self.variables if v in list(atomd.keys())]
+                parameters = [atomd[p] for p in self.parameters if p in list(atomd.keys())]
+                if len(variables) == 1:
+                    self.bool_thermo, self.axiom, tree_error = sym_thermo_constraint(ex, variables[0], parameters)
+                    if tree_error != '':
+                        self.tree_error.append(tree_error)
+                else:
+                    self.bool_thermo, self.axiom = False, 'Axiom 1'
+            old_bool_thermo = self.bool_thermo
+            old_axiom = self.axiom
+            # print('old bool:', old_bool_thermo)
+            # print('old self:', self)
+        ####################
+
+=======
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
         topDice = random()
         # Root replacement move
         if topDice < p_rr:
@@ -1086,6 +1303,25 @@ a tuple [node_value, [list, of, offspring, values]].
                 # Try to prune the root
                 dE, dEB, dEP, par_valuesNew = self.dE_rr(rr=None,
                                                          verbose=verbose)
+<<<<<<< HEAD
+
+                # ----------------- Modification ----------------------
+                if run_thermo_constraint:
+                    # Save the old tree
+                    testing_tree = deepcopy(self)
+                    # Create the new tree and run thermo_constraint
+                    rr = testing_tree.prune_root(update_gof=False, verbose=verbose)
+                    if rr == None:
+                        dEP_thermo = 0.0
+                    else:
+                        dEP_thermo = dEP_thermo_constraint(testing_tree, old_bool_thermo, old_axiom)
+                    dE += dEP_thermo
+                    dEP += dEP_thermo
+                    self.bool_thermo, self.axiom = old_bool_thermo, old_axiom
+                # -----------------------------------------------------
+
+=======
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
                 if -dEB / self.BT - dEP / self.PT > 300:
                     paccept = 1
                 else:
@@ -1100,11 +1336,50 @@ a tuple [node_value, [list, of, offspring, values]].
                     self.E += dE
                     self.EB += dEB
                     self.EP += dEP
+<<<<<<< HEAD
+
+                    #------------------ Modification -------------------------------------
+                    if run_thermo_constraint:
+                        # Convert the Tree into a SymPy expression
+                        ex = sympify(str(self))
+                        atomd = dict([(a.name, a) for a in ex.atoms() if a.is_Symbol])
+                        variables = [atomd[v] for v in self.variables if v in list(atomd.keys())]
+                        parameters = [atomd[p] for p in self.parameters if p in list(atomd.keys())]
+                        if len(variables) == 1:
+                            self.bool_thermo, self.axiom, tree_error = sym_thermo_constraint(ex, variables[0], parameters)
+                            if tree_error != '':
+                                self.tree_error.append(tree_error)
+                        else:
+                            self.bool_thermo, self.axiom = False, 'Axiom 1'
+                    #----------------------------------------------------------------------
+
+=======
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
             else:
                 # Try to replace the root
                 newrr = choice(self.rr_space)
                 dE, dEB, dEP, par_valuesNew = self.dE_rr(rr=newrr,
                                                          verbose=verbose)
+<<<<<<< HEAD
+
+                # ----------------- Modification ----------------------
+                if run_thermo_constraint:
+                    # Save the old tree
+                    testing_tree = deepcopy(self)
+                    # Create the new tree and run thermo_constraint
+                    rr = testing_tree.replace_root(rr=newrr, update_gof=False,
+                                                             verbose=verbose)
+                    if rr == None:
+                        dEP_thermo = 0.0
+                    else:
+                        dEP_thermo = dEP_thermo_constraint(testing_tree, old_bool_thermo, old_axiom)
+                    dE += dEP_thermo
+                    dEP += dEP_thermo
+                    self.bool_thermo, self.axiom = old_bool_thermo, old_axiom
+                # -----------------------------------------------------
+
+=======
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
                 if self.num_rr > 0 and -dEB / self.BT - dEP / self.PT > 0:
                     paccept = 1.
                 elif self.num_rr == 0:
@@ -1122,6 +1397,23 @@ a tuple [node_value, [list, of, offspring, values]].
                     self.E += dE
                     self.EB += dEB
                     self.EP += dEP
+<<<<<<< HEAD
+                    #------------------ Modification -------------------------------------
+                    if run_thermo_constraint:
+                        # Convert the Tree into a SymPy expression
+                        ex = sympify(str(self))
+                        atomd = dict([(a.name, a) for a in ex.atoms() if a.is_Symbol])
+                        variables = [atomd[v] for v in self.variables if v in list(atomd.keys())]
+                        parameters = [atomd[p] for p in self.parameters if p in list(atomd.keys())]
+                        if len(variables) == 1:
+                            self.bool_thermo, self.axiom, tree_error = sym_thermo_constraint(ex, variables[0], parameters)
+                            if tree_error != '':
+                                self.tree_error.append(tree_error)
+                        else:
+                            self.bool_thermo, self.axiom = False, 'Axiom 1'
+                    #----------------------------------------------------------------------
+=======
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
 
         # Long-range move
         elif topDice < (p_rr + p_long):
@@ -1138,6 +1430,21 @@ a tuple [node_value, [list, of, offspring, values]].
                         nready = True
             dE, dEB, dEP, par_valuesNew = self.dE_lr(target, new,
                                                      verbose=verbose)
+<<<<<<< HEAD
+            # --------------------- Modification --------------------------
+            if run_thermo_constraint:
+                # Create the copied tree and run thermo_constraint
+                testing_tree = deepcopy(self)
+                index_target = self.nodes.index(target)
+                copied_target = testing_tree.nodes[index_target]
+                copied_target.value = new
+                dEP_thermo = dEP_thermo_constraint(testing_tree, old_bool_thermo, old_axiom)
+                dE += dEP_thermo
+                dEP += dEP_thermo
+                self.bool_thermo, self.axiom = old_bool_thermo, old_axiom
+            # -------------------------------------------------------------
+=======
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
             try:
                 paccept = np.exp(-dEB / self.BT - dEP / self.PT)
             except:
@@ -1162,7 +1469,24 @@ a tuple [node_value, [list, of, offspring, values]].
                 self.E += dE
                 self.EB += dEB
                 self.EP += dEP
+<<<<<<< HEAD
+                # ------------------ Modification -------------------------------------
+                if run_thermo_constraint:
+                    # Convert the Tree into a SymPy expression
+                    ex = sympify(str(self))
+                    atomd = dict([(a.name, a) for a in ex.atoms() if a.is_Symbol])
+                    variables = [atomd[v] for v in self.variables if v in list(atomd.keys())]
+                    parameters = [atomd[p] for p in self.parameters if p in list(atomd.keys())]
+                    if len(variables) == 1:
+                        self.bool_thermo, self.axiom, tree_error = sym_thermo_constraint(ex, variables[0], parameters)
+                        if tree_error != '':
+                            self.tree_error.append(tree_error)
+                    else:
+                        self.bool_thermo, self.axiom = False, 'Axiom 1'
+                # ----------------------------------------------------------------------
+=======
 
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
         # Elementary tree (short-range) move
         else:
             # Choose a feasible move (doable and keeping size<=max_size)
@@ -1187,6 +1511,21 @@ a tuple [node_value, [list, of, offspring, values]].
             # Probability of acceptance
             dE, dEB, dEP, par_valuesNew, nif, nfi = self.dE_et(target, new,
                                                                verbose=verbose)
+<<<<<<< HEAD
+            # --------------------- Modification --------------------------
+            if run_thermo_constraint:
+                # Save the old tree
+                index_target = self.nodes.index(target)
+                testing_tree = deepcopy(self)
+                copied_target = testing_tree.nodes[index_target]
+                testing_tree.et_replace(copied_target, new, update_gof=False, verbose=verbose)
+                dEP_thermo = dEP_thermo_constraint(testing_tree, old_bool_thermo, old_axiom)
+                dE += dEP_thermo
+                dEP += dEP_thermo
+                self.bool_thermo, self.axiom = old_bool_thermo, old_axiom
+            # -------------------------------------------------------------
+=======
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
             try:
                 paccept = (float(nif) * omegai * sf * 
                            np.exp(-dEB / self.BT - dEP / self.PT)) / \
@@ -1204,7 +1543,24 @@ a tuple [node_value, [list, of, offspring, values]].
                 self.E += dE
                 self.EB += dEB
                 self.EP += dEP
+<<<<<<< HEAD
+                # ------------------ Modification -------------------------------------
+                if run_thermo_constraint:
+                    # Convert the Tree into a SymPy expression
+                    ex = sympify(str(self))
+                    atomd = dict([(a.name, a) for a in ex.atoms() if a.is_Symbol])
+                    variables = [atomd[v] for v in self.variables if v in list(atomd.keys())]
+                    parameters = [atomd[p] for p in self.parameters if p in list(atomd.keys())]
+                    if len(variables) == 1:
+                        self.bool_thermo, self.axiom, tree_error = sym_thermo_constraint(ex, variables[0], parameters)
+                        if tree_error != '':
+                            self.tree_error.append(tree_error)
+                    else:
+                        self.bool_thermo, self.axiom = False, 'Axiom 1'
+                # ----------------------------------------------------------------------
+=======
                 
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
         # Done
         return
 
@@ -1391,6 +1747,57 @@ datasets where used for training.
         return pd.DataFrame.from_dict(ypred)
 
 
+<<<<<<< HEAD
+def dEP_thermo_constraint(tree, old_bool_thermo, old_axiom):
+    if run_thermo_constraint:
+        dEP_thermo = 0.0
+        # Convert the Tree into a SymPy expression
+        ex = sympify(str(tree))
+        atomd = dict([(a.name, a) for a in ex.atoms() if a.is_Symbol])
+        variables = [atomd[v] for v in tree.variables if v in list(atomd.keys())]
+        parameters = [atomd[p] for p in tree.parameters if p in list(atomd.keys())]
+        # Checking with thermo constraint (only applicable for 1 variable)
+        if len(variables) == 1:
+            tree.bool_thermo, tree.axiom, tree_error = sym_thermo_constraint(ex, variables[0], parameters)
+            if tree_error != '':
+                tree.tree_error.append(tree_error)
+            if old_bool_thermo is True:
+                if tree.bool_thermo is False and tree.axiom == 'Axiom 1':
+                    dEP_thermo += axiom1_weight
+                elif tree.bool_thermo is False and tree.axiom == 'Axiom 2':
+                    dEP_thermo += axiom2_weight
+                else:
+                    dEP_thermo += 0.0
+            else:
+                if old_axiom == 'Axiom 1':
+                    if tree.bool_thermo is False and tree.axiom == 'Axiom 1':
+                        dEP_thermo += 0.0
+                    elif tree.bool_thermo is False and tree.axiom == 'Axiom 2':
+                        dEP_thermo += (axiom2_weight - axiom1_weight)
+                    else:
+                        dEP_thermo += (0 - axiom1_weight)
+                elif old_axiom == 'Axiom 2':
+                    if tree.bool_thermo is False and tree.axiom == 'Axiom 1':
+                        dEP_thermo += (axiom1_weight - axiom2_weight)
+                    elif tree.bool_thermo is False and tree.axiom == 'Axiom 2':
+                        dEP_thermo += 0
+                    else:
+                        dEP_thermo += (0 - axiom2_weight)
+        else:
+            tree.bool_thermo, tree.axiom = False, 'Axiom 1'
+            if old_bool_thermo is True:
+                dEP_thermo += axiom1_weight
+            else:
+                if old_axiom == 'Axiom 1':
+                    dEP_thermo += 0
+                elif old_axiom == 'Axiom 2':
+                    dEP_thermo += (axiom1_weight - axiom2_weight)
+    else:
+        # Contribution from the prior
+        dEP_thermo = 0.0
+    return dEP_thermo
+=======
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 # MAIN
@@ -1468,7 +1875,11 @@ def test5(string='(P120 + (((ALPHACAT / _a2) + (_a2 * CDH3)) + _a0))'):
     prior_par = {'Nopi_/': 0, 'Nopi_cosh': 0, 'Nopi_-': 0, 'Nopi_sin': 0, 'Nopi_tan': 0, 'Nopi_tanh': 0, 'Nopi_**': 0, 'Nopi_pow2': 0, 'Nopi_pow3': 0, 'Nopi_exp': 0, 'Nopi_log': 0, 'Nopi_sqrt': 0, 'Nopi_cos': 0, 'Nopi_sinh': 0, 'Nopi_abs': 0, 'Nopi_+': 0, 'Nopi_*': 0, 'Nopi_fac': 0}
 
     t = Tree(prior_par=prior_par, from_string=string)
+<<<<<<< HEAD
+    for i in range(1000):
+=======
     for i in range(1000000):
+>>>>>>> 9a66242ec6529ae79101302aed77e6b180d8e475
         t.mcmc_step(verbose=True)
         print('-'*150)
         t2 = Tree(from_string=str(t))
