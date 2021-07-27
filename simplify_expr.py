@@ -12,7 +12,7 @@ def simplify_expr(expr, variables=[], parameters=[]):
     # substitute and simplify
     sub_expr = expr.subs([(parameters[i], prime_list[i]) for i in range(len(prime_list))]).evalf()
     try:
-        # this is only for rational function
+        # this is only for rational function, simplify the coefficient of the highest degree term
         if sub_expr.is_rational_function() \
             and ('DIV' in [i.name for i in count_ops(sub_expr,visual=True).free_symbols]): # SymPy classifies polynomial as rational
             # splitting numerator and denominator
@@ -47,8 +47,20 @@ def simplify_expr(expr, variables=[], parameters=[]):
             num_val.remove(element)
     # substitute back the parameter
     constant_list = ['_c' + str(i) + '_' for i in range(len(num_val))]
-    simplified_expr = sub_expr.subs([(num_val[i], constant_list[i]) for i in range(len(num_val))])
-    return simplified_expr
+    cansp = sub_expr.subs([(num_val[i], constant_list[i]) for i in range(len(num_val))])
+    # rearrange constants in order of subcription number (adapted from BMS original code)
+    can = str(cansp)
+    ps = list([str(s) for s in cansp.free_symbols])
+    positions = []
+    for p in ps:
+        if p.startswith('_') and p.endswith('_'):
+            positions.append((can.find(p), p))
+    positions.sort()
+    pcount = 1
+    for pos, p in positions:
+        can = can.replace(p, 'c%d' % pcount)
+        pcount += 1
+    return can
 
 
 if __name__ == '__main__':
@@ -56,8 +68,8 @@ if __name__ == '__main__':
     p = symbols('p')
     # expr = (p * (a0 / ((a1 / a1) + (p / a2))))
     # expr = (p * ((p + a0) / (a3 + (p / a2))))
-    expr = sqrt(a3)
-    # expr = (((a2 + a0) + p) / (((a3 / (p / a3)) + (p / a2)) + a1))
+    # expr = sqrt(a3)
+    expr = (((a2 + a0) + p) / (((a3 / (p / a3)) + (p / a2)) + a1))
     # expr = ((a0 + p) / (((a3 / (p / a3)) + (p / a2)) + a1))
     print(expr)
     atomd = dict([(a.name, a) for a in expr.atoms() if a.is_Symbol])

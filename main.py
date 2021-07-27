@@ -82,11 +82,11 @@ pms = Parallel(
     # prior_par=prior_par,
     # from_string='(((p * _a2_) / (_a3_ + p)) + ((p * _a0_) / (_a1_ + p)))'
     # from_string='((p * _a2_) / (_a3_ + p))'
-    from_string='_a1_ * p'
+    from_string='_a1_ * p + _a2_'
 )
 # print('Initial tree', pms.t1)
 # Sampling
-nstep = 10000 #Number of MCMC steps
+nstep = 50000 #Number of MCMC steps
 
 # MCMC
 mdl, mdl_model = np.inf, None
@@ -187,7 +187,7 @@ print(mdl_model)
 print('Canonical form', mdl_model.canonical())
 print('Description length: ', mdl)
 print(mdl_model.par_values['d0'])
-print('Langmuir param: C1 = 38.9, C2 = 6.3')
+# print('Langmuir param: C1 = 38.9, C2 = 6.3')
 # print(main_models)
 print('Error trees: ', pms.t1.tree_error)
 
