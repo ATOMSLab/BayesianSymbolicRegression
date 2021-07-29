@@ -16,6 +16,9 @@ from scipy.optimize import curve_fit
 
 #seed(1111)
 
+# comment for demonstration purposes
+# a second comment
+
 # -----------------------------------------------------------------------------
 # The accepted operations (key: operation; value: #offspring)
 # -----------------------------------------------------------------------------
