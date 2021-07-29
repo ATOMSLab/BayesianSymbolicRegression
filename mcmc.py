@@ -17,11 +17,7 @@ from scipy.optimize import curve_fit
 #seed(1111)
 
 # comment for demonstration purposes
-<<<<<<< HEAD
 # a second comment
-=======
-# and another one to break things
->>>>>>> 0e44d0432b4764d504aed6ee00fc9002dd32e96b
 
 # -----------------------------------------------------------------------------
 # The accepted operations (key: operation; value: #offspring)
