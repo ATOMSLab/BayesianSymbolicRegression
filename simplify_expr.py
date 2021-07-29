@@ -69,8 +69,8 @@ if __name__ == '__main__':
     # expr = (p * (a0 / ((a1 / a1) + (p / a2))))
     # expr = (p * ((p + a0) / (a3 + (p / a2))))
     # expr = sqrt(a3)
-    expr = (((a2 + a0) + p) / (((a3 / (p / a3)) + (p / a2)) + a1))
-    # expr = ((a0 + p) / (((a3 / (p / a3)) + (p / a2)) + a1))
+    # expr = (((a2 + a0) + p) / (((a3 / (p / a3)) + (p / a2)) + a1))
+    expr = ((a0 + p) / (((a3 / (p / a3)) + (p / a2)) + a1))
     print(expr)
     atomd = dict([(a.name, a) for a in expr.atoms() if a.is_Symbol])
     v_name = ['p']

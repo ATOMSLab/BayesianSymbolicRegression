@@ -16,10 +16,12 @@ from sym_thermo_constraint import sym_thermo_constraint
 from simplify_expr import simplify_expr
 
 run_thermo_constraint = True
+penalizing_parameters = True
 change_complexity = True
 run_new_canonical = True
-axiom1_weight, axiom2_weight = 20., 10.
-complexity_factor = 2.
+axiom1_weight, axiom2_weight = 10., 5.
+complexity_penalty = 1.
+parameter_penalty = 1. 
 
 # import multiprocessing
 # from multiprocessing import Pool
@@ -159,7 +161,7 @@ class Tree():
 
             #-------- Modification ----------
             if change_complexity:
-                self.prior_par = dict([('Nopi_%s' % t, complexity_factor) for t in self.ops])
+                self.prior_par = dict([('Nopi_%s' % t, complexity_penalty) for t in self.ops])
             #--------------------------------
 
         else:
@@ -1174,6 +1176,7 @@ a tuple [node_value, [list, of, offspring, values]].
                     self.bool_thermo, self.axiom = False, 'Axiom 1'
             old_bool_thermo = self.bool_thermo
             old_axiom = self.axiom
+            old_n_dist_par = self.n_dist_par
             # print('old bool:', old_bool_thermo)
             # print('old self:', self)
         ####################
@@ -1199,6 +1202,8 @@ a tuple [node_value, [list, of, offspring, values]].
                     dE += dEP_thermo
                     dEP += dEP_thermo
                     self.bool_thermo, self.axiom = old_bool_thermo, old_axiom
+                if penalizing_parameters:
+                    dEP += (parameter_penalty*(testing_tree.n_dist_par-old_n_dist_par))
                 # -----------------------------------------------------
 
                 if -dEB / self.BT - dEP / self.PT > 300:
@@ -1251,6 +1256,8 @@ a tuple [node_value, [list, of, offspring, values]].
                     dE += dEP_thermo
                     dEP += dEP_thermo
                     self.bool_thermo, self.axiom = old_bool_thermo, old_axiom
+                if penalizing_parameters:
+                    dEP += (parameter_penalty*(testing_tree.n_dist_par-old_n_dist_par))
                 # -----------------------------------------------------
 
                 if self.num_rr > 0 and -dEB / self.BT - dEP / self.PT > 0:
@@ -1311,6 +1318,8 @@ a tuple [node_value, [list, of, offspring, values]].
                 dE += dEP_thermo
                 dEP += dEP_thermo
                 self.bool_thermo, self.axiom = old_bool_thermo, old_axiom
+            if penalizing_parameters:
+                dEP += (parameter_penalty*(testing_tree.n_dist_par-old_n_dist_par))
             # -------------------------------------------------------------
             try:
                 paccept = np.exp(-dEB / self.BT - dEP / self.PT)
@@ -1385,6 +1394,8 @@ a tuple [node_value, [list, of, offspring, values]].
                 dE += dEP_thermo
                 dEP += dEP_thermo
                 self.bool_thermo, self.axiom = old_bool_thermo, old_axiom
+            if penalizing_parameters:
+                dEP += (parameter_penalty*(testing_tree.n_dist_par-old_n_dist_par))
             # -------------------------------------------------------------
             try:
                 paccept = (float(nif) * omegai * sf * 

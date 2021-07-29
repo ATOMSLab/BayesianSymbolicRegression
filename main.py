@@ -138,7 +138,7 @@ for i in range(nstep):
             total_nops += pms.t1.nops[key]
         total_nops_trajectory[i] = total_nops
         description_lengths.append(pms.t1.E)
-        # print('model', pms.t1, 'EB and EP', pms.t1.EB, pms.t1.EP, 'TC', pms.t1.bool_thermo, pms.t1.axiom)
+        print('model', pms.t1, 'EB and EP', pms.t1.EB, pms.t1.EP, 'TC', pms.t1.bool_thermo, pms.t1.axiom)
         all_models.append(str(pms.t1))
         all_models.append(pms.t1.canonical())
         all_models.append(str(total_nops))  # total num of ops
