@@ -34,7 +34,7 @@ parameter_penalty = 1.
 # warnings.filterwarnings('error')
 # seed(1111)
 
-# example
+# Reject Charlie's change
 
 # -----------------------------------------------------------------------------
 # The accepted operations (key: operation; value: #offspring)
