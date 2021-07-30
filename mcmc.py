@@ -23,6 +23,9 @@ axiom1_weight, axiom2_weight = 10., 5.
 complexity_penalty = 1.
 parameter_penalty = 1. 
 
+# Prof. Josephson messing with the code
+
+
 # import multiprocessing
 # from multiprocessing import Pool
 # import time
@@ -30,6 +33,8 @@ parameter_penalty = 1.
 # import warnings
 # warnings.filterwarnings('error')
 # seed(1111)
+
+# Good chance this comment creates a conflict
 
 # -----------------------------------------------------------------------------
 # The accepted operations (key: operation; value: #offspring)
