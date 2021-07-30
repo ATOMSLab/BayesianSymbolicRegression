@@ -34,7 +34,7 @@ parameter_penalty = 1.
 # warnings.filterwarnings('error')
 # seed(1111)
 
-# Good chance this comment creates a conflict
+# example
 
 # -----------------------------------------------------------------------------
 # The accepted operations (key: operation; value: #offspring)
