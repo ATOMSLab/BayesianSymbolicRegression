@@ -1,0 +1,3 @@
+# git ignore file to keep ide mess from being added to repo
+
+**/__pycache__
