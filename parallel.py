@@ -194,7 +194,7 @@ if __name__ == '__main__':
     ]
 
     # Read the data
-    prior_par = read_prior_par('Prior/prior_param_sq.named_equations.nv7.np7.2016-06-06 16:43:26.287530.dat')
+    prior_par = read_prior_par('Prior/final_prior_param_sq.named_equations.nv7.np7.2016-06-06 16_43_26.287530.dat')
     VARS = iodata.XVARS['Trepat']
     Y = iodata.YLABS['Trepat']
     inFileName = 'Validation/Trepat/data/%s' % (iodata.FNAMES['Trepat'])
@@ -221,6 +221,7 @@ if __name__ == '__main__':
         pprint(p.trees)
         print('.' * 77)
         for T in Ts:
+            T = str(T)
             energy_ref = p.trees[T].get_energy(reset=False)[0]
             print(T, '\t',  \
                 p.trees[T].E, energy_ref, \

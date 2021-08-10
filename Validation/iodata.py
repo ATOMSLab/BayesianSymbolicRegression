@@ -153,6 +153,6 @@ def read_data(dset, ylabel=None, xlabels=None, in_fname=None):
 # Test main
 if __name__ == '__main__':
     data, x, y = read_data(sys.argv[1])
-    print data
-    print x
-    print y
+    print(data)
+    print(x)
+    print(y)
