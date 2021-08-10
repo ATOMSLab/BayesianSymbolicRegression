@@ -1,8 +1,6 @@
 # Code for calculating and counting expression fingerprints
 # used for EF prior
 
-# ===pseudocode below===
-
 # calculate the prior probability for all expression fingerprints observed
 # takes a list of expressions (probably instances of tree class from MCMC)
 # and a depth which indicates how many steps to go from each node to form fingerprint
@@ -12,6 +10,22 @@ def calculatePrior(expressions, depth):
 
     for expression in expressions:
         EF = findEF(expression, depth)
+        
+        # now add everything from this EF into the prior
+        for key in EF.keys():
+            if key in prior:
+                # add value if already in prior
+                prior[key] += EF[key]
+            else:
+                # otherwise just add to prior dict
+                prior[key] = EF[key]
+
+    # get total count of all EF parts / subtrees
+    totalItems = sum(prior.itervalues())
+
+    # change all the values in the dictionary to be that value / total count of values
+    # this can be thought of as the probability for each value to appear
+    prior = {item: prior[item] / totalItems for item in prior}
 
     return prior
 
