@@ -64,6 +64,6 @@ def postOrder(node, result, depth, step):
             postOrder(node.right, result, depth, step+1)
 
     # add this node last because post order
-    result += node.name
+    result += node.name + " "
 
     return result  
