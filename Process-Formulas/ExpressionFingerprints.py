@@ -2,10 +2,10 @@
 # used for EF prior
 
 # calculate the prior probability for all expression fingerprints observed
-# takes a list of expressions (probably instances of tree class from MCMC)
+# takes a list of expressions (written for instances of tree class from MCMC)
 # and a depth which indicates how many steps to go from each node to form fingerprint
 def calculatePrior(expressions, depth):
-    # fill dictionary of prior with EF for key and count for value
+    # fill dictionary of prior with EF subtree for key and count for value
     prior = {}
 
     for expression in expressions:
@@ -30,15 +30,12 @@ def calculatePrior(expressions, depth):
     return prior
 
 # find all subtrees that make up the expression fingerprint for this expression
-# take expression and depth which is number of steps from starting node
+# takes expression and depth which is number of steps from starting node
 def findEF(expression, depth):
     # dictionary for this expression fingerprint
     EF = {}
 
-    for node in expression:
-        # read in some order and omit missing nodes
-        # add post order to EF dict and +1 to count
-
+    for node in expression.nodes:
         # get the post order notation for this node / subtree
         result = ""
         postOrder(node, result, depth, 0)
@@ -52,20 +49,20 @@ def findEF(expression, depth):
 
     return EF
 
-# traverse tree from some node and return in post order
-# only takes <depth> steps from starting node
+# traverse recursively from some node and return subtree in post order
+# only takes <depth> steps away from starting node
 def postOrder(node, result, depth, step):
-
     # if we have not gone to max depth yet
     if (step < depth):
         # call function recursively for children nodes if they exist
-        if (node.left):
+        # order of nodes in list is left to right
+        if (len(node.offspring) > 0):
             # add them to result string 
             postOrder(node.left, result, depth, step+1)
-        if (node.right):
+        if (len(node.offspring) > 1):
             postOrder(node.right, result, depth, step+1)
 
     # add this node last because post order
-    result += node.name + " "
+    result += node.value + " "
 
     return result  
