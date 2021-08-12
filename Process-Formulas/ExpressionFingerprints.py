@@ -52,6 +52,8 @@ def findEF(expression, depth):
 
     return EF
 
+# traverse tree from some node and return in post order
+# only takes <depth> steps from starting node
 def postOrder(node, result, depth, step):
 
     # if we have not gone to max depth yet

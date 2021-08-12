@@ -221,6 +221,7 @@ if __name__ == '__main__':
         pprint(p.trees)
         print('.' * 77)
         for T in Ts:
+            # have to cast T to string so it will match dictionary key (not sure how this was supposed to work before)
             T = str(T)
             energy_ref = p.trees[T].get_energy(reset=False)[0]
             print(T, '\t',  \
