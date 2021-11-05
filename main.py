@@ -86,7 +86,7 @@ pms = Parallel(
 )
 # print('Initial tree', pms.t1)
 # Sampling
-nstep = 50000 #Number of MCMC steps
+nstep = 500 #Number of MCMC steps
 
 # MCMC
 mdl, mdl_model = np.inf, None
