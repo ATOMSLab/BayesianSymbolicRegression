@@ -40,28 +40,6 @@ def store_models(col_list, models, filename, col):
             n = m
 
 
-
-### Nitrogen dataset ###
-nitrogen_dataset = True
-if nitrogen_dataset:
-# Import data
-    XLABS = [
-        'p',
-    ]
-    raw_data = pd.read_csv('./Dataset/Langmuir1918nitrogen.csv')
-    raw_data = raw_data.append({'p': 0, 'q obs': 0}, ignore_index=True)  # Unit of P is bar
-    x, y = raw_data[XLABS], raw_data['q obs']
-    
-### Isobutane dataset Sun1998 ###
-isobutane_dataset = False
-
-if isobutane_dataset:
-    XLABS = ['p']
-    raw_data = pd.read_csv('./Dataset/Sun1998isobutane.csv', nrows=17)
-    raw_data = raw_data.drop(columns=['T (K)'])
-    raw_data = raw_data.rename(columns={'P (kPa)': 'p'})
-    x, y = raw_data[XLABS], raw_data['q (mol/kg)']
-
 # Initialize BMS
 # Read the hyperparameters for the prior
 prior_par = read_prior_par('treated_prior.dat')
@@ -75,14 +53,13 @@ Ts = [1]
 param_num = 4 # number of constants
 pms = Parallel(
     Ts,
-    variables=XLABS,
     parameters=['a%d' % i for i in range(param_num)],
-    x=x, y=y,
+    x=None, y=None,
     max_size=30,
     # prior_par=prior_par,
     # from_string='(((p * _a2_) / (_a3_ + p)) + ((p * _a0_) / (_a1_ + p)))'
     # from_string='((p * _a2_) / (_a3_ + p))'
-    from_string='_a1_ * p + _a2_'
+    # from_string='_a1_ * p + _a2_'
 )
 # print('Initial tree', pms.t1)
 # Sampling
@@ -119,7 +96,6 @@ for i in range(nstep):
             all_models[j].append(str(round(tree_item.E, 5)))  # Add the description length to the trace
             all_models[j].append(str(round(tree_item.EB, 5)))  # Add the EB to the trace
             all_models[j].append(str(round(tree_item.EP, 5)))  # Add the EP to the trace
-            all_models[j].append(str(round(tree_item.sse['d0'], 5)))  # Add sse of current tree
             all_models[j].append(str(tree_item.bool_thermo))  # Add TC Boolean
             all_models[j].append(tree_item.axiom)  # Add the violated TC
             # code breaks with 0 parameters so try-except was placed for constant
@@ -145,7 +121,6 @@ for i in range(nstep):
         all_models.append(str(round(pms.t1.E, 5)))  # Add the description length to the trace
         all_models.append(str(round(pms.t1.EB, 5)))  # Add the EB to the trace
         all_models.append(str(round(pms.t1.EP, 5)))  # Add the EP to the trace
-        all_models.append(str(round(pms.t1.sse['d0'], 5)))  # Add sse of current tree
         all_models.append(str(pms.t1.bool_thermo))  # Add TC Boolean
         all_models.append(pms.t1.axiom)  # Add the violated TC
         # code breaks with 0 parameters so try-except was placed for constant
@@ -167,7 +142,6 @@ for i in range(nstep):
         main_models.append(str(round(mdl, 5)))  # list for description lengths
         main_models.append(str(round(mdl_model.EB, 5)))  # EB
         main_models.append(str(round(mdl_model.EP, 5)))  # EP
-        main_models.append(str(mdl_model.sse['d0']))  # Add sse of current tree
         main_models.append(str(i+1)) # step achieving mdl
         main_models.append(str(mdl_model.bool_thermo))  # Add TC Boolean
         main_models.append(mdl_model.axiom)  # Add the violated TC
@@ -189,25 +163,6 @@ print(mdl_model.par_values['d0'])
 # print('Langmuir param: C1 = 38.9, C2 = 6.3')
 # print(main_models)
 print('Error trees: ', pms.t1.tree_error)
-
-# Parity plot
-fig, ax = plt.subplots(1, 2, figsize=(10,5))
-ax[0].plot(mdl_model.predict(x), y, 'ro')
-ax[0].plot([0, 36], [0, 36], 'b-')
-ax[0].set_title('Parity plot')
-ax[0].set_xlabel('predicted q')
-ax[0].set_ylabel('Observed q')
-
-# Function plot
-data = np.arange(0, 35, 0.01)
-p_array = pd.DataFrame(data, columns=['p'])
-ax[1].plot(p_array, mdl_model.predict(p_array), label='Predicted model')
-ax[1].plot(p_array, 38.9*p_array/(p_array+6.3), label='Langmuir')
-ax[1].scatter(x, y, color='r', label='Observed data')  # Data from last run
-ax[1].set_xlabel('p')
-ax[1].set_ylabel('q')
-ax[1].legend()
-fig.savefig('plot_model.jpeg', dpi=360)
 
 # description length
 plt.figure(figsize=(15, 5))
