@@ -90,7 +90,7 @@ pms = Parallel(
     # prior_par=prior_par,
     # from_string='(((p * _a2_) / (_a3_ + p)) + ((p * _a0_) / (_a1_ + p)))'
     # from_string='((p * _a2_) / (_a3_ + p))'
-    from_string='_a1_ * p + _a2_'
+    #from_string='_a1_ * p + _a2_'
 )
 # print('Initial tree', pms.t1)
 # Sampling
@@ -247,11 +247,15 @@ if len(Ts) > 1:
         store_models(col_list_all, all_models[i], filename_list[i], len(col_list_all))
 ######### 1 Temp ######################
 else:
-    rand_str = str(0.5*random.random())[2:8]
+    #rand_str = str(0.5*random.random())[2:8]
+    
+    thisTime = time.time()
+    timeStr = str(thisTime)
+    
     col_list_all = ['Model', 'Canonical form', 'Total num ops', 'Description length', 'EB', 'EP', 'SSE', 'TC Bool', 'Axiom'] + mdl_model.parameters
-    store_models(col_list_all, all_models, 'All_Models' + rand_str + '.txt', len(col_list_all))
+    store_models(col_list_all, all_models, 'All_Models' + timeStr + '.txt', len(col_list_all))
 
 
 # Accepted model: make file with combined array, everything in order
 col_list_main = ['Model', 'Canonical form', 'Description length', 'EB', 'EP', 'SSE', 'Step of acceptance', 'TC Bool', 'Axiom'] + mdl_model.parameters
-store_models(col_list_main, main_models, 'Accepted_Models' + rand_str + '.txt', len(col_list_main))
+store_models(col_list_main, main_models, 'Accepted_Models' + timeStr + '.txt', len(col_list_main))

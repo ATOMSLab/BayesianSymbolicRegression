@@ -108,9 +108,19 @@ def sym_thermo_constraint(expr, var, par):
         results[2] = False
 
     #print(results)
-    return results
+    #return results
 
+    if results != [True, True, True]:
+        if results[0] == False:
+            return False, 'Axiom 1', ''
+        elif results[1] == False:
+            return False, 'Axiom 2', ''
+        # axiom 3 (which isn't fully integrated yet)
+        else:
+            return False, 'Axiom 2', ''
 
+    else:
+        return True, '', ''
 
 
 if __name__ == '__main__':
