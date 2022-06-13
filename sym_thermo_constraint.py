@@ -83,7 +83,8 @@ def sym_thermo_constraint(expr, var, par):
     except:
         #println(error)
         print("SymPy cannot evaluate Axiom 1")
-        results[0] = False
+        #results[0] = False
+        return False, 'Axiom 1', expr
     # Axiom 2: the expr needs to converge to Henry's Law at zero pressure
     try:
         if (sp.limit(sp.diff(sub_expr, var), var, 0) == sp.oo 
@@ -94,7 +95,8 @@ def sym_thermo_constraint(expr, var, par):
     except:
         #println(error)
         print("SymPy cannot evaluate Axiom 2")
-        results[1] = False
+        #results[1] = False
+        return False, 'Axiom 2', expr
 
     # Axiom 3: the expr must be strictly increasing as pressure increases
     try:
@@ -104,8 +106,9 @@ def sym_thermo_constraint(expr, var, par):
             results[2] = False
     except:
         print("SymPy cannot evaluate Axiom 3")
-        print("Oops!", sys.exc_info()[0], "occurred for", sub_expr)
-        results[2] = False
+        #print("Oops!", sys.exc_info()[0], "occurred for", sub_expr)
+        #results[2] = False/
+        return False, 'Axiom 2', expr
 
     #print(results)
     #return results
