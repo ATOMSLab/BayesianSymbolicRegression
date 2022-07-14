@@ -42,7 +42,7 @@ def store_models(col_list, models, filename, col):
 
 
 ### Nitrogen dataset ###
-nitrogen_dataset = True
+nitrogen_dataset = False
 if nitrogen_dataset:
 # Import data
     XLABS = [
@@ -61,6 +61,14 @@ if isobutane_dataset:
     raw_data = raw_data.drop(columns=['T (K)'])
     raw_data = raw_data.rename(columns={'P (kPa)': 'p'})
     x, y = raw_data[XLABS], raw_data['q (mol/kg)']
+
+bet_dataset = True
+
+if bet_dataset: 
+    XLABS = ['p']
+    raw_data = pd.read_csv('./Dataset/Brunauer1938adsorptionUpdated.csv')
+    raw_data = raw_data.append({'p':0, 'q obs':0}, ignore_index=True)
+    x,y = raw_data[XLABS],raw_data['q obs']
 
 # Initialize BMS
 # Read the hyperparameters for the prior
