@@ -15,15 +15,13 @@ from scipy.optimize import curve_fit
 from sym_thermo_constraint import sym_thermo_constraint
 from simplify_expr import simplify_expr
 
-run_thermo_constraint = False
+run_thermo_constraint = True
 penalizing_parameters = False
 change_complexity = True
 run_new_canonical = False
 axiom1_weight, axiom2_weight = 10., 5.
-complexity_penalty = 1.
-parameter_penalty = 1. 
-
-# Prof. Josephson messing with the code
+complexity_penalty = 3.
+parameter_penalty = 0. 
 
 
 # import multiprocessing

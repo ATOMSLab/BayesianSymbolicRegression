@@ -10,7 +10,7 @@ sys.path.append('./Prior/')
 
 from parallel import *
 from fit_prior import read_prior_par
-
+from mcmc import run_thermo_constraint, penalizing_parameters, change_complexity, run_new_canonical, axiom1_weight, axiom2_weight, complexity_penalty, parameter_penalty
 import numpy as np
 import pandas as pd
 import time
@@ -25,11 +25,10 @@ from copy import deepcopy
 
 # Function to store models to .txt file
 def store_models(col_list, models, filename, col):
-    # Accepted model: make file with combined array, everything in order
+    # make file with combined array, everything in order
     n = m = 0
-    # directory = './Results/2104_Testing_woTC_20_N2dataset/' + filename
-    directory = './Ini_Testing/' + filename
-    # directory = './Results/2104_Testing_isobutane/' + filename
+    #directory = './Ini_Testing/' + filename
+    directory = './Results/20220412_EXP1/NoData_wTC_OldCanCheck/complexity_penalty_2/' + filename
     with open(directory, 'w') as f:
         f.writelines(",".join(col_list))
         f.writelines("\n")
@@ -45,8 +44,6 @@ def store_models(col_list, models, filename, col):
 prior_par = read_prior_par('treated_prior.dat')
 
 # Set the temperatures
-# Ts = [1] + [1.04**k for k in range(1, 20)]
-# Ts = [1] + [1.5**k for k in range(1, 5)]
 Ts = [1]
 
 # Initialize the parallel machine scientist
@@ -61,9 +58,9 @@ pms = Parallel(
     # from_string='((p * _a2_) / (_a3_ + p))'
     # from_string='_a1_ * p + _a2_'
 )
-# print('Initial tree', pms.t1)
+print('Initial tree', pms.t1)
 # Sampling
-nstep = 500 #Number of MCMC steps
+nstep = 50000 #Number of MCMC steps
 
 # MCMC
 mdl, mdl_model = np.inf, None
@@ -84,7 +81,7 @@ for i in range(nstep):
     if len(Ts) > 1:
         pms.tree_swap()  # Attempt to swap two randomly selected consecutive temps
         description_lengths.append(pms.t1.E)
-        # print('model', pms.t1, 'EB', pms.t1.EB, 'EP', pms.t1.EP, 'TC', pms.t1.bool_thermo, pms.t1.axiom)
+        print('model', pms.t1, 'EB', pms.t1.EB, 'EP', pms.t1.EP, 'TC', pms.t1.bool_thermo, pms.t1.axiom)
         for j in range(len(Ts)):
             tree_item = pms.trees[str(Ts[j])]        
             # calculating total number of operations in the tree
@@ -114,7 +111,7 @@ for i in range(nstep):
             total_nops += pms.t1.nops[key]
         total_nops_trajectory[i] = total_nops
         description_lengths.append(pms.t1.E)
-        print('model', pms.t1, 'EB and EP', pms.t1.EB, pms.t1.EP, 'TC', pms.t1.bool_thermo, pms.t1.axiom)
+        #print('model', pms.t1, 'EB and EP', pms.t1.EB, pms.t1.EP, 'TC', pms.t1.bool_thermo, pms.t1.axiom)
         all_models.append(str(pms.t1))
         all_models.append(pms.t1.canonical())
         all_models.append(str(total_nops))  # total num of ops
@@ -135,8 +132,8 @@ for i in range(nstep):
     # Check if this is the MDL expression so far
     if pms.t1.E < mdl:
         mdl, mdl_model = pms.t1.E, deepcopy(pms.t1)
-        print('mdl', mdl_model)
-        print('Canonical form', mdl_model.canonical())
+        #print('mdl', mdl_model)
+        #print('Canonical form', mdl_model.canonical())
         main_models.append(str(mdl_model))  # store model
         main_models.append(mdl_model.canonical())
         main_models.append(str(round(mdl, 5)))  # list for description lengths
@@ -152,9 +149,20 @@ for i in range(nstep):
         except KeyError:
             main_models.append('None')
             main_models.append('None')
+    if(i % 100 == 0):
+        print("Step ", i, "\tTime: ", round(time.time() - start_time))
 
 # Results
 runtime = round(time.time() - start_time)
+print('run_thermo_constraint',run_thermo_constraint,
+      '\npenalizing_parameters',penalizing_parameters,
+      '\nchange_complexity',change_complexity,
+      '\nrun_new_canonical',run_new_canonical,
+      '\naxiom1_weight, axiom2_weight',axiom1_weight, axiom2_weight,
+      '\ncomplexity_penalty',complexity_penalty,
+      '\nparameter_penalty',parameter_penalty,
+      '\n',
+)
 print('Time Elapsed:\t', str(datetime.timedelta(seconds=runtime)))
 print(mdl_model)
 print('Canonical form', mdl_model.canonical())
@@ -171,7 +179,7 @@ plt.title('MDL model: %s' % str(mdl_model))
 plt.xlabel('MCMC step', fontsize=14)
 plt.ylabel('Description length', fontsize=14)
 plt.tight_layout()
-plt.savefig('mdl_trajectory.jpeg', dpi=360)
+plt.savefig('./Results/20220412_EXP1/NoData_wTC_OldCanCheck/mdl_trajectory.jpeg', dpi=360)
 
 # Num ops 
 if len(Ts) == 1:
@@ -195,10 +203,10 @@ if len(Ts) > 1:
 ######### 1 Temp ######################
 else:
     rand_str = str(0.5*random.random())[2:8]
-    col_list_all = ['Model', 'Canonical form', 'Total num ops', 'Description length', 'EB', 'EP', 'SSE', 'TC Bool', 'Axiom'] + mdl_model.parameters
+    col_list_all = ['Model', 'Canonical form', 'Total num ops', 'Description length', 'EB', 'EP', 'TC Bool', 'Axiom'] + mdl_model.parameters
     store_models(col_list_all, all_models, 'All_Models' + rand_str + '.txt', len(col_list_all))
 
 
 # Accepted model: make file with combined array, everything in order
-col_list_main = ['Model', 'Canonical form', 'Description length', 'EB', 'EP', 'SSE', 'Step of acceptance', 'TC Bool', 'Axiom'] + mdl_model.parameters
+col_list_main = ['Model', 'Canonical form', 'Description length', 'EB', 'EP', 'Step of acceptance', 'TC Bool', 'Axiom'] + mdl_model.parameters
 store_models(col_list_main, main_models, 'Accepted_Models' + rand_str + '.txt', len(col_list_main))
