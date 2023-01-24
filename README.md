@@ -1,4 +1,2 @@
-# BayesianSymbolicRegression
-
-Modification of Bayesian Machine Scientist code developed by (authors) and described in (publications), forked from https://bitbucket.org/rguimera/machine-scientist/src/no_degeneracy/
-
+# BMS_project
+IMPORTANT: Please create the folder to store the results and edit the directory in main.py to match it. 
